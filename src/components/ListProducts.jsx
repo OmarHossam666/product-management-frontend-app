@@ -1,88 +1,101 @@
-import React, { Component } from 'react'
-import 'bootstrap/dist/css/bootstrap.min.css';
-import ProductService from '../services/ProductService';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useGetProductsQuery } from '../features/api/apiSlice';
 
+const ListProducts = () => {
+  const { data: products = [], isLoading, isError, error, isFetching } = useGetProductsQuery();
+  const navigate = useNavigate();
 
- class ListProducts extends Component {
+  const addProduct = () => {
+    navigate('/addproduct');
+  };
 
-  constructor(props) {
-  super(props);
-    this.state = {
-       products :[]
-    }
+  const view = (id) => {
+    navigate(`/viewProduct/${id}`);
+  };
 
-    this.addProduct = this.addProduct.bind(this);
+  const remove = (id) => {
+    navigate(`/deleteProduct/${id}`);
+  };
 
-  }
-  
-  componentDidMount(){
-    
-     ProductService.getProducts().then(response => {
-   // console.log(response.data);
-     this.setState({products: response.data});
-   
-     
-     
-    })
-     
-  }
-  addProduct(){
+  const update = (id) => {
+    navigate(`/updateProduct/${id}`);
+  };
 
-    this.props.history.push('/addproduct');
-    
-  }
-  view(id){
-    this.props.history.push(`/viewProduct/${id}`);
-  }
-  delete(id){
-    this.props.history.push(`/deleteProduct/${id}`);
-  }
-  update(id){
-    this.props.history.push(`/updateProduct/${id}`);
-  }
-  
-  render() {
-    return (
-     <div>
-   <h1 className='text-center'>List Of Products Page </h1>
-<button className='btn btn-primary' onClick={this.addProduct}>Add Product</button>
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th scope="col">Product Id </th>
-      <th scope="col">Product Name</th>
-      <th scope="col">Product Price</th>
-      <th scope="col">Product Quantity</th>
-    </tr>
-  </thead>
-  <tbody>
-    {
-       this.state.products.map(product => 
-             <tr key ={product.id}>
-             <td>{product.id}</td>
-             <td>{product.name}</td>
-             <td>{product.price}</td>
-             <td>{product.quantity}</td>
+  return (
+    <div>
+      <header className="header-actions">
+        <h1 className="page-title">Product Directory</h1>
+        <button className="btn btn-primary" onClick={addProduct}>
+          + Add Product
+        </button>
+      </header>
 
-            <td>
-            <button className="btn btn-info" onClick ={()=>this.view(product.id)}>View</button>
-            <button className="btn btn-danger" onClick ={()=>this.delete(product.id)}>Delete</button>
-            <button className="btn btn-success" onClick ={()=>this.update(product.id)}>Update</button>
-            </td>
-             </tr>
-       
-       )
-    }
-   
-   
-   
-  </tbody>
-</table>
-   
-     </div>
-    )
-  }
-}
+      <div className="table-container">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Name</th>
+              <th scope="col">Price</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(isLoading || isFetching) && products.length === 0 ? (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center', padding: 'var(--space-6)' }}>
+                  Loading products...
+                </td>
+              </tr>
+            ) : isError ? (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center', padding: 'var(--space-6)', color: 'var(--color-danger)' }}>
+                  Error loading products: {error?.error || 'Unknown error'}
+                </td>
+              </tr>
+            ) : products.length === 0 ? (
+              <tr>
+                <td colSpan="5" style={{ textAlign: 'center', padding: 'var(--space-6)' }}>
+                  No products found.
+                </td>
+              </tr>
+            ) : (
+              products.map((product) => (
+                <tr key={product.id}>
+                  <td>{product.id}</td>
+                  <td><strong>{product.name}</strong></td>
+                  <td>${Number(product.price).toFixed(2)}</td>
+                  <td>
+                    <span style={{ 
+                        color: product.quantity < 10 ? 'var(--color-danger)' : 'inherit',
+                        fontWeight: product.quantity < 10 ? '600' : 'normal'
+                      }}>
+                      {product.quantity}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="table-actions">
+                      <button className="btn btn-secondary" onClick={() => view(product.id)}>
+                        View
+                      </button>
+                      <button className="btn btn-secondary" onClick={() => update(product.id)}>
+                        Edit
+                      </button>
+                      <button className="btn btn-danger" onClick={() => remove(product.id)}>
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
 
-export default ListProducts
-
+export default ListProducts;

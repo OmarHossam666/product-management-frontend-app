@@ -1,72 +1,76 @@
-import React, { Component } from 'react'
-import ProductService from '../services/ProductService'
+import React from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useGetProductByIdQuery } from '../features/api/apiSlice';
 
- class Product extends Component {
+const Product = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  
+  const { data: product, isLoading, isError, error } = useGetProductByIdQuery(id);
 
-    constructor(props) {
-   super(props)
-   this.state = {
-id: this.props.match.params.id,
-products :{}
+  const goBack = () => {
+    navigate('/');
+  };
 
-   }
-
-    this.cancel = this.cancel.bind(this);
-
-    }
-
-
-   componentDidMount(){
-     ProductService.getProductsById(this.state.id).then(
-        
-        response => {this.setState({products: response.data})}
-        
-        )
-    
-    }
-
-    cancel(){
-        
-        this.props.history.push('/')
-    }
-
-  render() {
-    return (
-      <div className='container'>
-      <h1>View Product Page </h1>
-       <div className='card'>
-        <div className='card-body'>
-         <div className='row'>
-        <label>Product Id </label>
-        <div >{this.state.products.id}</div>
-         </div>
-
-         <div className='row'>
-        <label>Product Name </label>
-        <div >{this.state.products.name}</div>
-         </div>
-
-         <div className='row'>
-        <label>Product Price </label>
-        <div >{this.state.products.price}</div>
-         </div>
-
-         <div className='row'>
-        <label>Product Quantity </label>
-        <div >{this.state.products.quantity}</div>
-         </div>
-        
-        
-        
-        </div>
-        
-        
-        </div>
-        <button className="btn btn-danger" onClick ={this.cancel}>cancel</button>
-
-      </div>
-    )
+  if (isLoading) {
+    return <div className="card text-center" style={{ padding: 'var(--space-12)' }}>Loading product data...</div>;
   }
-}
 
-export default Product
+  if (isError || !product) {
+    return (
+      <div className="card text-center" style={{ padding: 'var(--space-12)', borderColor: 'var(--color-danger)' }}>
+        <h2 style={{ color: 'var(--color-danger)' }}>Product Not Found</h2>
+        <p style={{ color: 'var(--color-text-muted)', marginBottom: 'var(--space-4)' }}>
+          {error?.error || "We couldn't retrieve the details for this product ID."}
+        </p>
+        <button className="btn btn-primary" onClick={goBack}>Back to Dashboard</button>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <h1 className="page-title text-center">Product Details</h1>
+      
+      <div className="card">
+        <h2 className="card-title">{product.name}</h2>
+        
+        <div style={{ marginBottom: 'var(--space-4)' }}>
+          <label className="form-label">Product ID</label>
+          <div style={{ padding: 'var(--space-2) 0', color: 'var(--color-text-main)' }}>
+            {product.id}
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 'var(--space-4)' }}>
+          <label className="form-label">Price</label>
+          <div style={{ padding: 'var(--space-2) 0', color: 'var(--color-text-main)' }}>
+            ${Number(product.price).toFixed(2)}
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 'var(--space-4)' }}>
+          <label className="form-label">Stock Quantity</label>
+          <div style={{ padding: 'var(--space-2) 0', color: 'var(--color-text-main)' }}>
+            <span style={{ 
+              display: 'inline-block',
+              padding: '2px 8px',
+              borderRadius: '12px',
+              backgroundColor: product.quantity > 0 ? 'rgba(54, 179, 126, 0.1)' : 'rgba(255, 86, 48, 0.1)',
+              color: product.quantity > 0 ? 'var(--color-success)' : 'var(--color-danger)',
+              fontWeight: '600'
+            }}>
+              {product.quantity} Units
+            </span>
+          </div>
+        </div>
+
+        <div className="form-actions">
+          <button className="btn btn-primary" onClick={goBack}>Back to Dashboard</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Product;

@@ -1,110 +1,103 @@
-import React, { Component } from 'react'
-import ProductService from '../services/ProductService'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useInsertProductMutation } from '../features/api/apiSlice';
 
- class AddProduct extends Component {
+const AddProduct = () => {
+  const [product, setProduct] = useState({ id: '', name: '', price: '', quantity: '' });
+  const navigate = useNavigate();
+  const [insertProduct, { isLoading }] = useInsertProductMutation();
 
-    constructor(props) {
-    
-      super(props)
-      this.state = {
-        id :'',
-        name :'',
-        price :'',
-        quantity :'',
-      
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProduct(prevState => ({ ...prevState, [name]: value }));
+  };
+
+  const save = async (e) => {
+    e.preventDefault();
+    try {
+      await insertProduct(product).unwrap();
+      navigate('/');
+    } catch (err) {
+      console.error('Failed to save the product:', err);
+      // Optional: Add toast error handling here
     }
-      this.changeIdHandler = this.changeIdHandler.bind(this)  
+  };
 
-      this.changeNameHandler = this.changeNameHandler.bind(this)
-      this.changePriceHandler = this.changePriceHandler.bind(this)
-      this.changeQuantityHandler = this.changeQuantityHandler.bind(this)
-      this.save = this.save.bind(this)
-      this.cancel = this.cancel.bind(this)
-    }
+  const cancel = () => {
+    navigate('/');
+  };
 
-
-
-    changeIdHandler(event) {
-  this.setState({id : event.target.value})
-
-    } 
-
-    changeNameHandler(event){
-      this.setState({name : event.target.value})
-    }
-
-    changePriceHandler(event){
-
-      this.setState({price : event.target.value})
-    }
-
-    changeQuantityHandler(event){
-      this.setState({quantity : event.target.value})
-    }
-      
-
-    save =(e) =>{
-    e.preventDefault()
-   let product = {id:this.state.id,name:this.state.name,price:this.state.price,quantity:this.state.quantity}
-
-  console.log(product)
-  ProductService.insertProduct(product);
-  this.props.history.push("/");
-  
-  }
-  cancel(){
-    this.props.history.push("/");
-  }
-
-  render() {
-    return (
-      <div className='container'>
-         <h1>Add Product Page </h1>
-
-         <div className='row'>
-         <div className='text-center'>
-
-         <div class="card">
-        <div class="card-body">
-                        
-
-        <form>
-  <div class="form-group">
-    <label for="id">Product Id</label>
-    <input type="number" className="form-control" id="id"  placeholder="Enter Product Id"
-    value ={this.state.id} onChange ={this.changeIdHandler}
-    />
-   <label for="name">Product Name</label>
-   <input type="text" className="form-control" id="name"  placeholder="Enter Product Name"
-    value ={this.state.name} onChange ={this.changeNameHandler}
-    />
-     <label for="price">Product Price</label>
-     <input type="number" className="form-control" id="price"  placeholder="Enter Product Price"
-    value ={this.state.price} onChange ={this.changePriceHandler}
-    />
-     <label for="qty">Product Quantity</label>
-     <input type="number" className="form-control" id="qty"  placeholder="Enter Product Quantity"
-    value ={this.state.quantity} onChange ={this.changeQuantityHandler}
-    />
-    
-  </div>
-  
-  <button className="btn btn-success" onClick ={this.save}>save</button>
-  <button className="btn btn-danger" onClick ={this.cancel}>cancel</button>
-</form>
-        
-        
-        
-        </div>
-         </div>
+  return (
+    <div>
+      <h1 className="page-title text-center">Add Product</h1>
+      <div className="card">
+        <form onSubmit={save}>
+          <div className="form-group">
+            <label className="form-label" htmlFor="id">Product ID</label>
+            <input 
+              type="number" 
+              className="form-control" 
+              id="id" 
+              name="id"
+              placeholder="Enter Product ID"
+              value={product.id} 
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label" htmlFor="name">Product Name</label>
+            <input 
+              type="text" 
+              className="form-control" 
+              id="name" 
+              name="name"
+              placeholder="Enter Product Name"
+              value={product.name} 
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label" htmlFor="price">Product Price</label>
+            <input 
+              type="number" 
+              className="form-control" 
+              id="price" 
+              name="price"
+              placeholder="Enter Product Price"
+              value={product.price} 
+              onChange={handleChange}
+              min="0"
+              step="0.01"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label" htmlFor="quantity">Product Quantity</label>
+            <input 
+              type="number" 
+              className="form-control" 
+              id="quantity" 
+              name="quantity"
+              placeholder="Enter Product Quantity"
+              value={product.quantity} 
+              onChange={handleChange}
+              min="0"
+              required
+            />
+          </div>
           
-
-         </div>
-         </div>
+          <div className="form-actions">
+            <button type="button" className="btn btn-secondary" onClick={cancel} disabled={isLoading}>Cancel</button>
+            <button type="submit" className="btn btn-success" disabled={isLoading}>
+              {isLoading ? 'Saving...' : 'Save Product'}
+            </button>
+          </div>
+        </form>
       </div>
-    )
-  }
-}
+    </div>
+  );
+};
 
-export default AddProduct
-
+export default AddProduct;
