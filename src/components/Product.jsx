@@ -53,12 +53,15 @@ const Product = () => {
           <label className="form-label">Stock Quantity</label>
           <div style={{ padding: 'var(--space-2) 0', color: 'var(--color-text-main)' }}>
             <span style={{ 
-              display: 'inline-block',
-              padding: '2px 8px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '4px 12px',
               borderRadius: '12px',
-              backgroundColor: product.quantity > 0 ? 'rgba(54, 179, 126, 0.1)' : 'rgba(255, 86, 48, 0.1)',
+              fontSize: '12px',
+              fontWeight: '500',
+              backgroundColor: product.quantity > 0 ? 'rgba(52, 199, 89, 0.1)' : 'rgba(255, 59, 48, 0.1)',
               color: product.quantity > 0 ? 'var(--color-success)' : 'var(--color-danger)',
-              fontWeight: '600'
             }}>
               {product.quantity} Units
             </span>

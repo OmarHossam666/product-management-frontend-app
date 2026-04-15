@@ -69,8 +69,15 @@ const ListProducts = () => {
                   <td>${Number(product.price).toFixed(2)}</td>
                   <td>
                     <span style={{ 
-                        color: product.quantity < 10 ? 'var(--color-danger)' : 'inherit',
-                        fontWeight: product.quantity < 10 ? '600' : 'normal'
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '4px 12px',
+                        borderRadius: '12px',
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        backgroundColor: product.quantity < 10 ? 'rgba(255, 59, 48, 0.1)' : 'var(--color-bg)',
+                        color: product.quantity < 10 ? 'var(--color-danger)' : 'var(--color-text-main)',
                       }}>
                       {product.quantity}
                     </span>

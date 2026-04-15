@@ -12,7 +12,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: var(--shadow-sm);
+  /* Instead of shadow, we use a 1px border or backdrop-filter if transparent. We stick to solid surface here. */
 }
 
 .header-content {
@@ -22,10 +22,11 @@
 }
 
 .header-brand {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--color-text-main);
   text-decoration: none;
+  letter-spacing: -0.01em;
 }
 
 .header-brand:hover {
@@ -38,13 +39,16 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  align-items: center;
 }
 
 .nav-link {
   color: var(--color-text-muted);
   font-weight: 500;
+  font-size: 14px;
   text-decoration: none;
   transition: color 150ms ease-out;
+  padding: var(--space-2) 0;
 }
 
 .nav-link:hover, .nav-link.active {
@@ -57,14 +61,15 @@
   display: none;
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 20px;
   color: var(--color-text-main);
   cursor: pointer;
+  padding: var(--space-2);
 }
 
 @media (max-width: 768px) {
   .header-nav {
-    display: none; /* In a real app we'd toggle this */
+    display: none; /* Mobile toggle implementation */
   }
   .mobile-toggle {
     display: block;
@@ -74,16 +79,15 @@
 /* Main Content Area */
 .app-main {
   flex: 1;
-  padding: var(--space-8) 0;
+  padding: var(--space-12) 0; /* More breathing room */
 }
 
 /* Footer Styles */
 .app-footer {
-  background-color: var(--color-surface);
-  border-top: 1px solid var(--color-border);
-  padding: var(--space-6) 0;
+  background-color: var(--color-bg);
+  padding: var(--space-8) 0;
   color: var(--color-text-muted);
-  font-size: 0.875rem;
+  font-size: 13px;
 }
 
 .footer-content {
@@ -106,4 +110,12 @@
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.footer-nav a {
+  color: var(--color-text-muted);
+}
+
+.footer-nav a:hover {
+  color: var(--color-text-main);
 }
