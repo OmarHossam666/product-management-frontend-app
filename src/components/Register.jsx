@@ -1,58 +1,93 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../features/auth/authSlice';
+import { setCredentials } from '../features/auth/authSlice';
+import { useRegisterMutation } from '../features/auth/authApiSlice';
+import { useToast } from './ToastContext';
 import './Login.css';
 
 const Register = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { addToast } = useToast();
   
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [shake, setShake] = useState(false);
 
-  const handleRegister = (e) => {
+  const [registerUser, { isLoading }] = useRegisterMutation();
+
+  // Password strength logic
+  const calculateStrength = (pass) => {
+    let score = 0;
+    if (!pass) return score;
+    if (pass.length > 8) score += 1;
+    if (/[a-z]/.test(pass) && /[A-Z]/.test(pass)) score += 1;
+    if (/\d/.test(pass)) score += 1;
+    if (/[^a-zA-Z\d]/.test(pass)) score += 1;
+    return score;
+  };
+
+  const strength = calculateStrength(password);
+  const getStrengthColor = () => {
+      if (strength === 0) return 'transparent';
+      if (strength === 1) return 'var(--color-danger)';
+      if (strength === 2) return 'var(--color-warning)';
+      return 'var(--color-success)';
+  };
+  const getStrengthText = () => {
+      if (strength === 0) return '';
+      if (strength === 1) return 'Weak';
+      if (strength === 2) return 'Fair';
+      if (strength >= 3) return 'Strong';
+  };
+
+  const handleRegister = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate authentication delay for micro-animation UX
-    setTimeout(() => {
-      setIsSubmitting(false);
-      // Automatically log the user in after successful registration
-      dispatch(loginSuccess({ email, name }));
+    try {
+      const userData = await registerUser({ name, email, password }).unwrap();
+      dispatch(setCredentials({ ...userData }));
+      addToast('Account created successfully!', 'success');
       navigate('/');
-    }, 1500);
+    } catch (err) {
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+      addToast(err?.data?.message || 'Registration failed. Please check your inputs.', 'error');
+    }
   };
 
   const handleSocialLogin = (provider) => {
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      dispatch(loginSuccess({ email: `user@${provider}.com` }));
-      navigate('/');
-    }, 800);
+    window.location.href = `http://localhost:9000/oauth2/authorization/${provider}`;
   };
 
   return (
     <div className="auth-wrapper">
-      {/* Left Sidebar: Dynamic Aesthetic */}
       <div className="auth-sidebar text-center">
+        {/* Floating Particles */}
+        <div className="particles">
+          {[...Array(20)].map((_, i) => (
+            <div key={i} className="particle" style={{
+              '--left': `${Math.random() * 100}%`,
+              '--top': `${Math.random() * 100}%`,
+              '--duration': `${Math.random() * 5 + 5}s`,
+              '--delay': `${Math.random() * 5}s`
+            }}></div>
+          ))}
+        </div>
          <div className="auth-brand">
           <h1>Aura</h1>
           <p>Join the next generation of product management platforms. Unlock full visibility into your cycles.</p>
         </div>
       </div>
 
-      {/* Right Sidebar: Auth Form */}
       <div className="auth-main">
-        <div className="auth-form-container">
+        <div className={`auth-form-container page-transition ${shake ? 'shake-animation' : ''}`}>
           <h2 className="auth-heading">Create your account</h2>
           <p className="auth-subheading">Sign up in seconds and start managing.</p>
 
           <div className="social-providers">
-            <button type="button" className="social-btn" onClick={() => handleSocialLogin('google')} disabled={isSubmitting}>
+            <button type="button" className="social-btn" onClick={() => handleSocialLogin('google')} disabled={isLoading}>
               <svg className="social-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -61,7 +96,7 @@ const Register = () => {
               </svg>
               Google
             </button>
-            <button type="button" className="social-btn" onClick={() => handleSocialLogin('github')} disabled={isSubmitting}>
+            <button type="button" className="social-btn" onClick={() => handleSocialLogin('github')} disabled={isLoading}>
               <svg className="social-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
               </svg>
@@ -98,7 +133,7 @@ const Register = () => {
               <label htmlFor="email" className="floating-label">Email address</label>
             </div>
 
-            <div className="floating-group" style={{ marginBottom: 'var(--space-6)' }}>
+            <div className="floating-group">
               <input 
                 type="password" 
                 id="password" 
@@ -111,9 +146,17 @@ const Register = () => {
               />
               <label htmlFor="password" className="floating-label">Password</label>
             </div>
+            
+            {/* Password Strength Meter */}
+            <div className="password-strength-meter">
+                <div className="strength-bar-container">
+                    <div className="strength-bar" style={{ width: `${(strength / 4) * 100}%`, backgroundColor: getStrengthColor() }}></div>
+                </div>
+                <div className="strength-text" style={{ color: getStrengthColor() }}>{getStrengthText()}</div>
+            </div>
 
-            <button type="submit" className="auth-btn" disabled={isSubmitting}>
-              {isSubmitting ? (
+            <button type="submit" className="auth-btn" disabled={isLoading} style={{ marginTop: 'var(--space-4)' }}>
+              {isLoading ? (
                 <>
                   <svg className="spinner" viewBox="0 0 50 50" style={{ width: '20px', height: '20px', animation: 'rotate 2s linear infinite' }}>
                     <circle cx="25" cy="25" r="20" fill="none" strokeWidth="4" stroke="currentColor" strokeLinecap="round" strokeDasharray="90, 150" style={{ animation: 'dash 1.5s ease-in-out infinite' }} />

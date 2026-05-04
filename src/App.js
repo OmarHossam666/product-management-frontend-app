@@ -10,6 +10,8 @@ import UpdateProduct from './components/UpdateProduct';
 import DeleteProduct from './components/DeleteProduct';
 import Login from './components/Login';
 import Register from './components/Register';
+import OAuth2RedirectHandler from './components/OAuth2RedirectHandler';
+import { ToastProvider } from './components/ToastContext';
 
 /**
  * Route protection wrapper. Inspects our Redux Auth slice state.
@@ -42,26 +44,29 @@ const ProtectedRoute = () => {
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Public Authentication Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+    <ToastProvider>
+      <Router>
+        <Routes>
+          {/* Public Authentication Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
 
-        {/* Protected Application Routes wrapped in ProtectedRoute */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<ListProducts />} />
-          <Route path="/productsList" element={<Navigate to="/" replace />} />
-          <Route path="/addproduct" element={<AddProduct />} />
-          <Route path="/viewProduct/:id" element={<Product />} />
-          <Route path="/updateProduct/:id" element={<UpdateProduct />} />
-          <Route path="/deleteProduct/:id" element={<DeleteProduct />} />
-        </Route>
-        
-        {/* Fallback routing */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+          {/* Protected Application Routes wrapped in ProtectedRoute */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<ListProducts />} />
+            <Route path="/productsList" element={<Navigate to="/" replace />} />
+            <Route path="/addproduct" element={<AddProduct />} />
+            <Route path="/viewProduct/:id" element={<Product />} />
+            <Route path="/updateProduct/:id" element={<UpdateProduct />} />
+            <Route path="/deleteProduct/:id" element={<DeleteProduct />} />
+          </Route>
+          
+          {/* Fallback routing */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </ToastProvider>
   );
 }
 

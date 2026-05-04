@@ -1,12 +1,13 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { customBaseQuery } from './customBaseQuery';
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:9000/api/products' }),
+  baseQuery: customBaseQuery,
   tagTypes: ['Product'],
   endpoints: (builder) => ({
     getProducts: builder.query({
-      query: () => '/all',
+      query: () => '/products/all',
       // Provide the general "Product" tag to refetch when invalidated
       providesTags: (result) => 
         result 
@@ -14,12 +15,12 @@ export const apiSlice = createApi({
           : ['Product'],
     }),
     getProductById: builder.query({
-      query: (id) => `/find/${id}`,
+      query: (id) => `/products/find/${id}`,
       providesTags: (result, error, id) => [{ type: 'Product', id }],
     }),
     insertProduct: builder.mutation({
       query: (product) => ({
-        url: '/insert',
+        url: '/products/insert',
         method: 'POST',
         body: product,
       }),
@@ -27,7 +28,7 @@ export const apiSlice = createApi({
     }),
     updateProduct: builder.mutation({
       query: ({ id, ...product }) => ({
-        url: `/update/${id}`,
+        url: `/products/update/${id}`,
         method: 'PUT',
         body: product,
       }),
@@ -38,7 +39,7 @@ export const apiSlice = createApi({
     }),
     deleteProductById: builder.mutation({
       query: (id) => ({
-        url: `/delete/${id}`,
+        url: `/products/delete/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Product'],

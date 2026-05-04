@@ -1,27 +1,39 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  // Check localStorage so sessions persist across browser refreshes
-  isAuthenticated: localStorage.getItem('aura_auth_token') ? true : false,
-  user: null,
+  isAuthenticated: !!localStorage.getItem('accessToken'),
+  accessToken: localStorage.getItem('accessToken') || null,
+  refreshToken: localStorage.getItem('refreshToken') || null,
+  user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
 };
 
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    loginSuccess: (state, action) => {
+    setCredentials: (state, action) => {
+      const { accessToken, refreshToken, user } = action.payload;
       state.isAuthenticated = true;
-      state.user = action.payload;
-      localStorage.setItem('aura_auth_token', 'mock_token_xyz123');
+      state.accessToken = accessToken;
+      state.refreshToken = refreshToken;
+      if (user) {
+        state.user = user;
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
     },
     logout: (state) => {
       state.isAuthenticated = false;
+      state.accessToken = null;
+      state.refreshToken = null;
       state.user = null;
-      localStorage.removeItem('aura_auth_token');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
     }
   }
 });
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const { setCredentials, logout } = authSlice.actions;
 export default authSlice.reducer;
