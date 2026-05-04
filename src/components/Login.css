@@ -5,6 +5,7 @@
   width: 100vw;
   background-color: var(--color-bg);
   font-family: var(--font-family);
+  transition: background-color 220ms ease;
 }
 
 .auth-sidebar {
@@ -23,8 +24,8 @@
 }
 
 @keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
@@ -74,6 +75,7 @@
   line-height: 1.6;
 }
 
+/* ── Right panel (form area) ─────────────── */
 .auth-main {
   flex: 1;
   display: flex;
@@ -81,6 +83,7 @@
   align-items: center;
   padding: var(--space-8);
   background-color: var(--color-surface);
+  transition: background-color 220ms ease;
 }
 
 .auth-form-container {
@@ -101,7 +104,7 @@
   font-size: 1rem;
 }
 
-/* Floating Label Inputs */
+/* ── Floating Label Inputs ───────────────── */
 .floating-group {
   position: relative;
   margin-bottom: var(--space-6);
@@ -115,8 +118,27 @@
   background-color: transparent;
   border: none;
   border-bottom: 2px solid var(--color-border);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, color 220ms ease;
   outline: none;
+  font-family: var(--font-family);
+}
+
+/* Autofill override for dark mode */
+.floating-input:-webkit-autofill,
+.floating-input:-webkit-autofill:hover,
+.floating-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-text-main);
+  -webkit-box-shadow: 0 0 0px 1000px var(--color-surface) inset;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: var(--color-text-main);
+}
+
+[data-theme="dark"] .floating-input:-webkit-autofill,
+[data-theme="dark"] .floating-input:-webkit-autofill:hover,
+[data-theme="dark"] .floating-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-text-main);
+  -webkit-box-shadow: 0 0 0px 1000px var(--color-surface) inset;
+  caret-color: var(--color-text-main);
 }
 
 .floating-label {
@@ -143,6 +165,7 @@
   font-weight: 600;
 }
 
+/* ── Auth Button ─────────────────────────── */
 .auth-btn {
   width: 100%;
   padding: var(--space-3);
@@ -152,23 +175,31 @@
   border-radius: var(--radius-md);
   font-size: 1rem;
   font-weight: 600;
+  font-family: var(--font-family);
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: var(--space-2);
 }
 
-.auth-btn:hover {
+.auth-btn:hover:not(:disabled) {
   background-color: var(--color-primary-hover);
   transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 113, 227, 0.35);
 }
 
-.auth-btn:active {
+.auth-btn:active:not(:disabled) {
   transform: translateY(0);
 }
 
+.auth-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ── Footer links ────────────────────────── */
 .auth-extra {
   margin-top: var(--space-6);
   text-align: center;
@@ -188,38 +219,29 @@
   text-decoration: underline;
 }
 
+/* ── Responsive ──────────────────────────── */
 @media (max-width: 900px) {
   .auth-sidebar {
     display: none;
   }
   .auth-main {
-    background: linear-gradient(135deg, rgba(244, 245, 247, 0.9) 0%, rgba(255, 255, 255, 1) 100%);
+    /* Use theme-aware background — no hardcoded color */
+    background-color: var(--color-bg);
   }
 }
 
-/* Spinner Animations */
+/* ── Spinner Animations ──────────────────── */
 @keyframes rotate {
-  100% {
-    transform: rotate(360deg);
-  }
+  100% { transform: rotate(360deg); }
 }
 
 @keyframes dash {
-  0% {
-    stroke-dasharray: 1, 150;
-    stroke-dashoffset: 0;
-  }
-  50% {
-    stroke-dasharray: 90, 150;
-    stroke-dashoffset: -35;
-  }
-  100% {
-    stroke-dasharray: 90, 150;
-    stroke-dashoffset: -124;
-  }
+  0%   { stroke-dasharray: 1, 150;  stroke-dashoffset: 0; }
+  50%  { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
+  100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
 }
 
-/* Social Buttons & Providers */
+/* ── Social Buttons & Providers ─────────── */
 .auth-divider {
   display: flex;
   align-items: center;
@@ -229,20 +251,15 @@
   margin: var(--space-6) 0;
 }
 
-.auth-divider::before, 
+.auth-divider::before,
 .auth-divider::after {
   content: '';
   flex: 1;
   border-bottom: 1px solid var(--color-border);
 }
 
-.auth-divider::before {
-  margin-right: .5em;
-}
-
-.auth-divider::after {
-  margin-left: .5em;
-}
+.auth-divider::before { margin-right: .5em; }
+.auth-divider::after  { margin-left: .5em; }
 
 .social-providers {
   display: flex;
@@ -257,19 +274,27 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
-  background: white;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-base);
+  /* Use CSS variable instead of hardcoded white */
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
   color: var(--color-text-main);
   font-weight: 500;
   font-family: var(--font-family);
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.social-btn:hover {
+.social-btn:hover:not(:disabled) {
   background: var(--color-bg);
-  border-color: #c1c7d0;
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-xs);
+}
+
+.social-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .social-icon {
@@ -277,7 +302,7 @@
   height: 20px;
 }
 
-/* Particle Animations for Sidebar */
+/* ── Particle Animations for Sidebar ──────── */
 .particles {
   position: absolute;
   top: 0;
@@ -301,36 +326,50 @@
 }
 
 @keyframes float {
-  0% { transform: translateY(0) scale(1); opacity: 0.2; }
+  0%   { transform: translateY(0) scale(1); opacity: 0.2; }
   100% { transform: translateY(-50px) scale(1.5); opacity: 0.8; }
 }
 
-/* Password Strength Meter */
+/* ── Password Strength Meter ─────────────── */
 .password-strength-meter {
-    margin-top: -10px;
-    margin-bottom: var(--space-4);
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
+  margin-top: -10px;
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .strength-bar-container {
-    flex: 1;
-    height: 4px;
-    background-color: var(--color-border);
-    border-radius: 2px;
-    overflow: hidden;
+  flex: 1;
+  height: 4px;
+  background-color: var(--color-border);
+  border-radius: 2px;
+  overflow: hidden;
+  transition: background-color 220ms ease;
 }
 
 .strength-bar {
-    height: 100%;
-    transition: width 0.3s ease, background-color 0.3s ease;
+  height: 100%;
+  transition: width 0.3s ease, background-color 0.3s ease;
 }
 
 .strength-text {
-    font-size: 12px;
-    font-weight: 600;
-    width: 40px;
-    text-align: right;
-    transition: color 0.3s ease;
+  font-size: 12px;
+  font-weight: 600;
+  width: 40px;
+  text-align: right;
+  transition: color 0.3s ease;
+}
+
+/* ── Dark mode: specific surfaces that can't use vars directly ─ */
+[data-theme="dark"] .auth-main {
+  background-color: var(--color-surface);
+}
+
+[data-theme="dark"] .social-btn {
+  background: var(--color-surface-raised);
+}
+
+[data-theme="dark"] .social-btn:hover:not(:disabled) {
+  background: var(--color-bg);
 }

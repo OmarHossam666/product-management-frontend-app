@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap');
 
 :root {
-  /* Core Palette – Apple-caliber neutrals */
+  /* Core Palette â€“ Apple-caliber neutrals */
   --color-bg: #F5F5F7;
   --color-surface: #FFFFFF;
   --color-surface-raised: #FFFFFF;
@@ -67,7 +67,46 @@
   --radius-full: 9999px;
 }
 
-/* ─── Reset ─────────────────────────────── */
+/* Dark Theme Overrides */
+[data-theme="dark"] {
+  --color-bg: #0A0A0F;
+  --color-surface: #16161D;
+  --color-surface-raised: #1E1E28;
+  --color-border: rgba(255,255,255,0.08);
+  --color-border-hover: rgba(255,255,255,0.16);
+
+  --color-text-main: #F2F2F7;
+  --color-text-secondary: #AEAEB2;
+  --color-text-muted: #636366;
+  --color-text-inverse: #1C1C1E;
+
+  --color-primary: #3B8EF5;
+  --color-primary-hover: #5BA4F7;
+  --color-primary-subtle: rgba(59, 142, 245, 0.12);
+
+  --color-success: #30D158;
+  --color-success-hover: #28B84D;
+  --color-success-subtle: rgba(48, 209, 88, 0.12);
+
+  --color-danger: #FF453A;
+  --color-danger-hover: #FF6961;
+  --color-danger-subtle: rgba(255, 69, 58, 0.12);
+
+  --color-warning: #FFD60A;
+  --color-warning-subtle: rgba(255, 214, 10, 0.12);
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.25);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.35);
+}
+
+/* Smooth theme transition - scoped to body to avoid breaking animations */
+body, body * { --_theme-tx: background-color 220ms ease, border-color 220ms ease, color 220ms ease; }
+body { transition: var(--_theme-tx), box-shadow 220ms ease; }
+
+
+/* â”€â”€â”€ Reset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 *, *::before, *::after { box-sizing: border-box; }
 
 body {
@@ -90,7 +129,7 @@ a {
 }
 a:hover { color: var(--color-primary-hover); }
 
-/* ─── Layout Helpers ─────────────────────── */
+/* â”€â”€â”€ Layout Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .container {
   width: 100%;
   max-width: 1100px;
@@ -99,7 +138,7 @@ a:hover { color: var(--color-primary-hover); }
 }
 @media (min-width: 768px) { .container { padding: 0 var(--space-8); } }
 
-/* ─── Typography ─────────────────────────── */
+/* â”€â”€â”€ Typography â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .page-title {
   font-size: 30px;
   font-weight: 700;
@@ -116,7 +155,7 @@ a:hover { color: var(--color-primary-hover); }
   margin-bottom: var(--space-8);
 }
 
-/* ─── Buttons ─────────────────────────────── */
+/* â”€â”€â”€ Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -193,7 +232,7 @@ a:hover { color: var(--color-primary-hover); }
   animation: spin 0.65s linear infinite;
 }
 
-/* ─── Data Table ─────────────────────────── */
+/* â”€â”€â”€ Data Table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .table-container {
   background: var(--color-surface);
   border-radius: var(--radius-lg);
@@ -256,7 +295,7 @@ a:hover { color: var(--color-primary-hover); }
   color: var(--color-danger);
 }
 
-/* ─── Cards & Forms ──────────────────────── */
+/* â”€â”€â”€ Cards & Forms â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .card {
   background: var(--color-surface);
   border-radius: var(--radius-lg);
@@ -317,7 +356,7 @@ a:hover { color: var(--color-primary-hover); }
 
 .text-center { text-align: center; }
 
-/* ─── Misc Auth Wrapper ───────────────────── */
+/* â”€â”€â”€ Misc Auth Wrapper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .auth-wrapper {
   min-height: 100dvh;
   display: flex;
@@ -325,7 +364,7 @@ a:hover { color: var(--color-primary-hover); }
   justify-content: center;
 }
 
-/* ─── Animations ─────────────────────────── */
+/* â”€â”€â”€ Animations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .page-transition {
   animation: fadeInUp 0.35s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
 }
@@ -358,7 +397,7 @@ a:hover { color: var(--color-primary-hover); }
   40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 
-/* ─── Skeleton Loading ───────────────────── */
+/* â”€â”€â”€ Skeleton Loading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .skeleton-box {
   background: linear-gradient(90deg, #EBEBF0 25%, #F5F5F7 50%, #EBEBF0 75%);
   background-size: 200% 100%;
@@ -389,7 +428,7 @@ a:hover { color: var(--color-primary-hover); }
 .data-table tbody tr:nth-child(5) { animation-delay: 0.20s; }
 .data-table tbody tr:nth-child(n+6) { animation-delay: 0.24s; }
 
-/* ─── Confirm Dialog ─────────────────────── */
+/* â”€â”€â”€ Confirm Dialog â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .dialog-overlay {
   position: fixed;
   inset: 0;
@@ -480,3 +519,5 @@ a:hover { color: var(--color-primary-hover); }
 .btn-danger.dialog-btn:focus-visible {
   box-shadow: var(--shadow-danger-focus);
 }
+
+

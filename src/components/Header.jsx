@@ -2,11 +2,36 @@ import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../features/auth/authSlice';
+import { useTheme } from './ThemeContext';
+
+/* ── Inline SVG icons ─────────────────────────────── */
+const SunIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="5" />
+    <line x1="12" y1="1" x2="12" y2="3" />
+    <line x1="12" y1="21" x2="12" y2="23" />
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+    <line x1="1" y1="12" x2="3" y2="12" />
+    <line x1="21" y1="12" x2="23" y2="12" />
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+  </svg>
+);
+
+const MoonIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+  </svg>
+);
 
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector(state => state.auth);
+  const { theme, toggleTheme } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const dropdownRef = useRef(null);
@@ -34,8 +59,12 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [dropdownOpen]);
 
-  // Google OAuth provides imageUrl or picture field
-  const avatarUrl = user?.imageUrl || user?.picture || user?.profilePicture;
+  // Reset image error when user changes (e.g., new login)
+  useEffect(() => { setImgError(false); }, [user?.email]);
+
+  // Google OAuth provides picture / imageUrl / profilePicture
+  const avatarUrl = user?.picture || user?.imageUrl || user?.profilePicture;
+  const isDark = theme === 'dark';
 
   return (
     <header className="app-header">
@@ -60,6 +89,23 @@ const Header = () => {
             </NavLink>
           </li>
 
+          {/* ── Theme Toggle ── */}
+          <li>
+            <button
+              id="theme-toggle-btn"
+              className={`theme-toggle-btn ${isDark ? 'theme-toggle-btn--dark' : 'theme-toggle-btn--light'}`}
+              onClick={toggleTheme}
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={isDark ? 'Light mode' : 'Dark mode'}
+            >
+              <span className="theme-toggle-track">
+                <span className="theme-toggle-thumb" />
+                <span className="theme-toggle-icon theme-toggle-icon--sun"><SunIcon /></span>
+                <span className="theme-toggle-icon theme-toggle-icon--moon"><MoonIcon /></span>
+              </span>
+            </button>
+          </li>
+
           {user && (
             <li className="user-menu-item" ref={dropdownRef}>
               <button
@@ -73,10 +119,11 @@ const Header = () => {
                 {avatarUrl && !imgError ? (
                   <img
                     src={avatarUrl}
-                    alt={user.name}
+                    alt={user.name || 'User avatar'}
                     className="user-avatar user-avatar--photo"
                     onError={() => setImgError(true)}
                     referrerPolicy="no-referrer"
+                    crossOrigin="anonymous"
                   />
                 ) : (
                   <span className="user-avatar user-avatar--initials">
@@ -102,9 +149,10 @@ const Header = () => {
                     {avatarUrl && !imgError ? (
                       <img
                         src={avatarUrl}
-                        alt={user.name}
+                        alt={user.name || 'User avatar'}
                         className="dropdown-avatar"
                         referrerPolicy="no-referrer"
+                        crossOrigin="anonymous"
                         onError={() => setImgError(true)}
                       />
                     ) : (
